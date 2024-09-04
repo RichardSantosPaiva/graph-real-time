@@ -1,24 +1,28 @@
-const express = require('express');
-const port = 3001;
+const WebSocket = require('ws');
+const server = new WebSocket.Server({ port: 8080 });
 
-const app = express();
+server.on('connection', ws => {
+  console.log('Client connected');
 
-const cors = require('cors');
-app.use(cors());
+  // Envia dados para o cliente a cada 5 segundos
+  const sendData = () => {
+    const data = [
+      { x: ["John", "Doe"], y: Math.floor(Math.random() * 100) },
+      { x: ["Joe", "Smith"], y: Math.floor(Math.random() * 100) },
+      { x: ["Jake", "Williams"], y: Math.floor(Math.random() * 100) },
+      { x: "Amber", y: Math.floor(Math.random() * 100) },
+      { x: ["Peter", "Brown"], y: Math.floor(Math.random() * 100) },
+      { x: ["Mary", "Evans"], y: Math.floor(Math.random() * 100) },
+      { x: ["David", "Wilson"], y: Math.floor(Math.random() * 100) },
+      { x: ["Lily", "Roberts"], y: Math.floor(Math.random() * 100) }
+    ];
+    ws.send(JSON.stringify(data));
+  };
 
-const axios = require('axios');
-app.get('/klines', async (req, res, next) => {
-  const {symbol, interval} = req.query;
-  if(!symbol || !interval) return res.status(422).send('Symbol and interval are required.');
+  const interval = setInterval(sendData, 5000);
 
-  try{
-    const response = await axios.get(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=60`)
-    res.json(response.data);
-  }catch(err){
-    res.status(500).json(err.response ? err.response.data : err.message);
-  }
-
-})
-
-app.listen(port);
-console.log('Server listening...');
+  ws.on('close', () => {
+    clearInterval(interval);
+    console.log('Client disconnected');
+  });
+});

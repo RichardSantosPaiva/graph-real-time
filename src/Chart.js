@@ -16,10 +16,10 @@ export default function Chart(props) {
         }
       }
     },
-    colors: ['#FF4560', '#008FFB'], // Example colors
+    colors: ['#FF4560', '#008FFB', '#00E396', '#FEB019', '#775DD0', '#546E7A', '#26a69a', '#D10CE8'], // Defina cores para cada coluna
     plotOptions: {
       bar: {
-        columnWidth: '45%',
+        columnWidth: '80%',
         distributed: true,
       }
     },
@@ -30,16 +30,7 @@ export default function Chart(props) {
       show: false
     },
     xaxis: {
-      categories: [
-        ['John', 'Doe'],
-        ['Joe', 'Smith'],
-        ['Jake', 'Williams'],
-        'Amber',
-        ['Peter', 'Brown'],
-        ['Mary', 'Evans'],
-        ['David', 'Wilson'],
-        ['Lily', 'Roberts'],
-      ],
+      categories: props.data.map(item => item.x),
       labels: {
         style: {
           colors: ['#FF4560', '#008FFB'], // Example colors
@@ -50,7 +41,7 @@ export default function Chart(props) {
   };
 
   const series = [{
-    data: props.data
+    data: props.data.map(item => item.y)
   }];
 
   return (
@@ -58,7 +49,7 @@ export default function Chart(props) {
       options={options}
       series={series}
       type="bar"
-      width={640}
+      width={800}
       height={480}
     />
   );

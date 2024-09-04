@@ -1,20 +1,34 @@
-import {useEffect, useState} from 'react'
-import Chart from './Chart'
-import {  getCandles  } from './DataService'
+import { useEffect, useState } from 'react';
+import Chart from './Chart';
 
 function App() {
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    getCandles('BTCUSDT', '1m')
-     .then(data => setData(data))
-     .catch(err => alert(err.response ? err.response.data: err.message))
-  },[])
+    const ws = new WebSocket('ws://localhost:8080');
+
+    ws.onmessage = (event) => {
+      const newData = JSON.parse(event.data);
+      setData(newData);
+    };
+
+    ws.onopen = () => {
+      console.log('WebSocket connection opened');
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []);
 
   return (
-   <div>
-      <Chart data={data}/>
-   </div>
+    <div>
+      <Chart data={data} />
+    </div>
   );
 }
 
