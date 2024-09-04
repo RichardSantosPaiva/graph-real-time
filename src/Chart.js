@@ -1,6 +1,6 @@
 import ApexChart from 'react-apexcharts';
 
-export default function Chart() {
+export default function Chart(props) {
   const options = {
     chart: {
       height: 350,
