@@ -1,5 +1,10 @@
 import ApexChart from 'react-apexcharts';
 
+/** 
+ * props:
+ * - data
+ * 
+ */
 export default function Chart(props) {
   const options = {
     chart: {
@@ -45,7 +50,7 @@ export default function Chart(props) {
   };
 
   const series = [{
-    data: [21, 22, 10, 28, 16, 21, 13, 30]
+    data: props.data
   }];
 
   return (
