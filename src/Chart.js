@@ -1,56 +1,84 @@
-import ApexChart from 'react-apexcharts';
+import React from 'react';
+import ReactApexChart from 'react-apexcharts';
 
-/** 
- * props:
- * - data
- * 
- */
-export default function Chart(props) {
+const Chart = ({ data }) => {
+  // Extrair categorias e pontos dos dados recebidos
+  const seriesData = data.map(item => item.pontos);
+  console.log('Series Data:', seriesData); // Verifique se os dados estão corretos
+  const categories = data.map(item => item.nome);
+  console.log('Categories:', categories); // Verifique se as categorias estão corretas
+
+  // Definindo opções para o gráfico com os dados do MySQL
   const options = {
     chart: {
-      height: 350,
       type: 'bar',
-      events: {
-        click: function(chart, w, e) {
-          // Handle click events
-        }
-      }
+      height: 580,
     },
-    colors: ['#FF4560', '#008FFB', '#00E396', '#FEB019', '#775DD0', '#546E7A', '#26a69a', '#D10CE8'], // Defina cores para cada coluna
     plotOptions: {
       bar: {
-        columnWidth: '80%',
+        barHeight: '100%',
         distributed: true,
-      }
+        horizontal: true,
+        dataLabels: {
+          position: 'bottom',
+        },
+      },
     },
+    colors: ['#4C7EFF', '#FFC24C', '#A0C340', '#8A29E6', '#FF4C4D', '#FF4CA2'],
     dataLabels: {
-      enabled: false
+      enabled: true,
+      textAnchor: 'start',
+      style: {
+        fontFamily: 'Roboto, sans-serif',
+        colors: ['#fff'],
+      },
+      formatter: function (val, opt) {
+        return opt.w.globals.labels[opt.dataPointIndex] + ": " + val;
+      },
+      offsetX: 0,
+      dropShadow: {
+        enabled: true,
+      },
     },
-    legend: {
-      show: false
+    stroke: {
+      width: 1,
+      colors: ['#fff'],
     },
     xaxis: {
-      categories: props.data.map(item => item.x),
+      categories: categories, // Usando os nomes do MySQL
+    },
+    yaxis: {
       labels: {
-        style: {
-          colors: ['#FF4560', '#008FFB'], // Example colors
-          fontSize: '12px'
-        }
-      }
-    }
+        show: true, // Exibe os rótulos do eixo Y
+      },
+      max: Math.max(...seriesData) + 100, // Ajusta o máximo do eixo Y para garantir que os valores mais altos sejam visíveis
+    },
+    tooltip: {
+      theme: 'dark',
+      x: {
+        show: false,
+      },
+      y: {
+        title: {
+          formatter: function () {
+            return '';
+          },
+        },
+      },
+    },
   };
 
+  // Configuração da série
   const series = [{
-    data: props.data.map(item => item.y)
+    name: 'Pontos',
+    data: seriesData,
   }];
 
   return (
-    <ApexChart
-      options={options}
-      series={series}
-      type="bar"
-      width={800}
-      height={480}
-    />
+    <div id="chart">
+      <ReactApexChart options={options} series={series} type="bar" height={380} />
+    </div>
   );
-}
+};
+
+export default Chart;
