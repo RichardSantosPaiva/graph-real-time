@@ -1,4 +1,5 @@
 const WebSocket = require('ws');
+const mysql = require('mysql');
 const server = new WebSocket.Server({ port: 8080 });
 
 server.on('connection', ws => {
@@ -6,17 +7,20 @@ server.on('connection', ws => {
 
   // Envia dados para o cliente a cada 5 segundos
   const sendData = () => {
-    const data = [
-      { x: ["John", "Doe"], y: Math.floor(Math.random() * 100) },
-      { x: ["Joe", "Smith"], y: Math.floor(Math.random() * 100) },
-      { x: ["Jake", "Williams"], y: Math.floor(Math.random() * 100) },
-      { x: "Amber", y: Math.floor(Math.random() * 100) },
-      { x: ["Peter", "Brown"], y: Math.floor(Math.random() * 100) },
-      { x: ["Mary", "Evans"], y: Math.floor(Math.random() * 100) },
-      { x: ["David", "Wilson"], y: Math.floor(Math.random() * 100) },
-      { x: ["Lily", "Roberts"], y: Math.floor(Math.random() * 100) }
-    ];
-    ws.send(JSON.stringify(data));
+    const con = mysql.createConnection({
+      host: "3.215.46.11",
+      user: "richard",
+      password: "teste01&",
+      database: "gintec"
+    });
+
+    con.query("SELECT u.nome, CONCAT(sala.serie, 'º ', sala.descricao) AS sala_nome, SUM(CASE WHEN atv.codigo IS NOT NULL THEN 600 ELSE 0 END) AS pontos FROM tabusuario AS u LEFT JOIN tabatividadecampeonatorealizada AS atv ON u.codigo = atv.usuariocodigo JOIN tabsala AS sala ON u.salaCodigo = sala.codigo GROUP BY u.nome, sala.descricao, sala.serie ORDER BY pontos DESC LIMIT 10;", function (err, result, fields) {
+      if (err) throw err;
+      result.sort((a, b) => b.pontos - a.pontos); // Garantir que os dados estejam ordenados
+      console.log('Sending data:', result); // Log dos dados enviados
+      ws.send(JSON.stringify(result));
+    });
+
   };
 
   const interval = setInterval(sendData, 5000);
