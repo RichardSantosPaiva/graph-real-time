@@ -10,7 +10,6 @@ function App() {
     ws.onmessage = (event) => {
       const newData = JSON.parse(event.data);
 
-
       setData(newData);
     };
 
