@@ -49,7 +49,7 @@ const Chart = ({ data }) => {
     },
     yaxis: {
       labels: {
-        show: true, // Exibe os rótulos do eixo Y
+        show: false, // Exibe os rótulos do eixo Y
       },
       max: Math.max(...seriesData) + 100, // Ajusta o máximo do eixo Y para garantir que os valores mais altos sejam visíveis
     },
